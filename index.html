@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5271787068763887"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Task Roulette</title>
+
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Failed', err));
+        }
+    </script>
+
+
+
+    <style>
+        :root {
+            /* ナイトモード時（デフォルト） */
+            --bg: #050505;
+            --accent: #ff007b;
+            --sub: #00f2ff;
+            --timer-color: #39ff14;
+            --text: #ffffff;
+            --card: #1a1a1a;
+            --border: #333333;
+            --input-bg: #000000;
+            --ctrl-active-bg: rgba(255, 255, 255, 0.25);
+            --ctrl-active-text: #ffffff;
+            --ctrl-active-border: #ffffff;
+            --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                          linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+            --bg-size: 20px 20px;
+            --bg-pos: 0 0, 10px 10px;
+        }
+
+        body.light-mode {
+            --bg: #ecece7;
+            --card: #f9f9f7;
+            --text: #2c3e50;
+            --border: #d1d1cf;
+            --input-bg: #ffffff;
+            --ctrl-active-bg: rgba(0, 0, 0, 0.05);
+            --bg-pattern: none;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg); color: var(--text);
+            background-image: var(--bg-pattern);
+            background-size: var(--bg-size);
+            background-position: var(--bg-pos);
+            margin: 0; display: flex; justify-content: center;
+            min-height: 100vh; padding: 20px; box-sizing: border-box;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container { width: 100%; max-width: 500px; text-align: center; position: relative; }
+
+        .header-area {
+            display: flex; align-items: center; justify-content: center;
+            position: relative; width: 100%; margin-bottom: 20px; padding-top: 10px;
+        }
+
+        h1 { 
+            font-size: 1.8rem; letter-spacing: 5px; color: var(--sub); 
+            margin: 0; text-transform: uppercase; transition: 0.4s;
+            padding: 0 45px;
+        }
+
+        .settings-btn {
+            position: absolute; right: 0;
+            background: rgba(128, 128, 128, 0.1); border: 1px solid var(--sub); border-radius: 50%;
+            width: 44px; height: 44px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; color: var(--sub); transition: 0.3s;
+        }
+
+        .time-settings, .list-manager, .modal-content { 
+            background: var(--card); border: 1px solid var(--border); border-radius: 15px; transition: 0.4s;
+        }
+
+        .time-settings { padding: 15px; margin-bottom: 20px; }
+        .time-settings h2 { font-size: 1rem; margin-top: 0; color: var(--sub); }
+        
+        .preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .time-btn { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .time-btn.active { background: rgba(128, 128, 128, 0.15); color: var(--sub); border: 2px solid var(--sub); font-weight: bold; }
+        
+        .custom-time { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .custom-time input { width: 60px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 5px; border-radius: 5px; text-align: center; font-size: 16px; }
+        #selected-time-display { font-weight: bold; color: var(--sub); margin-top: 5px; }
+
+        #display-area {
+            min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-size: 1.4rem; font-weight: bold; border: 2px solid var(--sub); border-radius: 20px; margin-bottom: 20px;
+            background: rgba(128, 128, 128, 0.05); padding: 20px;
+        }
+
+        .gacha-btn {
+            width: 100%; padding: 1.2rem; font-size: 1.2rem; font-weight: bold;
+            background: linear-gradient(45deg, var(--sub), var(--sub)); color: white; border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); margin-bottom: 20px;
+            transition: opacity 0.2s;
+        }
+        .gacha-btn:active { opacity: 0.8; }
+
+        #timer-section {
+            display: none; background: var(--input-bg); border: 1px solid var(--timer-color); border-radius: 15px;
+            padding: 20px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
+        }
+        #timer-display { font-size: 3rem; font-weight: bold; font-family: 'Consolas', monospace; color: var(--timer-color); margin-bottom: 15px; }
+        
+        .timer-controls { display: flex; justify-content: center; gap: 10px; }
+        .timer-controls button {
+            flex: 1; background: transparent; color: var(--timer-color); border: 1px solid var(--timer-color);
+            padding: 10px 0; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .timer-controls button.active-ctrl {
+            background-color: var(--timer-color) !important;
+            color: var(--bg) !important;
+        }
+
+        .list-manager { padding: 20px; text-align: left; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        .input-group input[type="text"] { flex-grow: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 8px; font-size: 16px; }
+        .input-group input[type="color"] { width: 40px; height: 40px; border: none; background: transparent; cursor: pointer; padding: 0; }
+        .add-btn { background: var(--sub); color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        .task-item { display: flex; justify-content: space-between; align-items: center; background: rgba(128,128,128,0.1); margin-bottom: 5px; padding: 8px 12px; border-radius: 5px; }
+        .task-info { display: flex; align-items: center; gap: 12px; flex-grow: 1; }
+        .task-color-input { width: 28px; height: 28px; border: none; background: transparent; cursor: pointer; padding: 0; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+        .delete-btn { color: #ff4444; cursor: pointer; font-weight: bold; padding: 0 10px; }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(4px);
+        }
+        .modal-content { padding: 25px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; text-align: left; border: 1px solid var(--sub); }
+        .modal-content h2 { font-size: 1.2rem; color: var(--sub); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top: 0; }
+        
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9rem; }
+        
+        .history-list { margin-top: 10px; font-size: 0.85rem; }
+        .history-item { 
+            border-bottom: 1px solid var(--border); padding: 12px 8px; 
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: 0.2s; border-radius: 5px; gap: 5px;
+        }
+        .history-item:hover { background: rgba(128, 128, 128, 0.1); }
+        .history-main { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+        .history-task { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .delete-history { color: #ff4444; font-size: 1.2rem; padding: 5px 15px; cursor: pointer; flex-shrink: 0; }
+
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #bbbbbb; border-radius: 34px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--sub); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .footer-links { margin-top: 40px; padding-bottom: 20px; font-size: 0.75rem; opacity: 0.5; }
+        .footer-links span { cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <h1 id="main-title">Task Roulette</h1>
+        <button class="settings-btn" onclick="openModal('settings-modal')">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+    </div>
+    
+    <div class="time-settings">
+        <h2>⏱ 実行する時間を設定</h2>
+        <div class="preset-grid">
+            <button class="time-btn" onclick="setPresetTime(30, this)">30秒</button>
+            <button class="time-btn" onclick="setPresetTime(60, this)">1分</button>
+            <button class="time-btn active" onclick="setPresetTime(300, this)">5分</button>
+            <button class="time-btn" onclick="setPresetTime(600, this)">10分</button>
+            <button class="time-btn" onclick="setPresetTime(1800, this)">30分</button>
+            <button class="time-btn" onclick="setPresetTime(3600, this)">1時間</button>
+            <button class="time-btn" onclick="setPresetTime(7200, this)">2時間</button>
+            <button class="time-btn" onclick="setPresetTime(14400, this)">4時間</button>
+            <button class="time-btn" onclick="setPresetTime(28800, this)">8時間</button>
+        </div>
+        
+        <div class="custom-time">
+            <input type="number" id="custom-h" min="0" value="0"> 時間
+            <input type="number" id="custom-m" min="0" value="0"> 分
+            <button class="add-btn" style="padding: 5px 10px;" onclick="setCustomTime()">適用</button>
+        </div>
+        <div id="selected-time-display">設定時間: 5分</div>
+    </div>
+
+    <div id="display-area"><span id="result-text">Ready?</span></div>
+    <button class="gacha-btn" id="spin-button" onclick="spin()">タスクを決める！</button>
+
+    <div id="timer-section">
+        <div id="timer-display">00:00:00</div>
+        <div class="timer-controls">
+            <button id="btn-start" onclick="startTimer()">START</button>
+            <button id="btn-pause" onclick="pauseTimer()">PAUSE</button>
+            <button id="btn-reset" onclick="resetTimer()">RESET</button>
+        </div>
+    </div>
+
+    <div class="list-manager">
+        <h2 style="font-size: 0.9rem; color: var(--sub); margin-top:0;">📋 行動リスト</h2>
+        <div class="input-group">
+            <input type="color" id="new-task-color" value="#39ff14">
+            <input type="text" id="new-task" placeholder="追加する行動">
+            <button class="add-btn" onclick="addTask()">追加</button>
+        </div>
+        <div id="task-list-display"></div>
+        <button onclick="resetDefault()" style="margin-top:15px; background:none; border:none; color:#777; cursor:pointer; text-decoration:underline; font-size: 0.8rem; width:100%;">デフォルトに戻す</button>
+    </div>
+
+    <div class="footer-links">
+<a href="about.html">サイトについて</a> |
+<a href="how-to-use.html">使い方</a> |
+<a href="privacy.html">プライバシー</a> |
+<a href="contact.html">お問い合わせ</a>
+</div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay" onclick="closeModal(event, 'settings-modal')">
+    <div class="modal-content">
+        <h2>システム設定</h2>
+        <div class="setting-row">
+            <label>テーマ変更</label>
+            <select id="setting-theme" onchange="saveSettings()" style="background:var(--input-bg); color:var(--text); border:1px solid var(--sub); padding:5px; border-radius:5px;">
+                <option value="auto">自動</option>
+                <option value="dark">ダーク</option>
+                <option value="light">ライト</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <label>全体カラー (ダーク時)</label>
+            <input type="color" id="setting-color-dark" value="#00f2ff" onchange="saveSettings()" style="background:none; border:none; cursor:pointer; width:35px; height:35px; padding:0;">
+        </div>
+        <div class="setting-row">
+            <label>全体カラー (ライト時)</label>
+            <input type="color" id="setting-color-light" value="#0077cc" onchange="saveSettings()" style="background:none; border:none; cursor:pointer; width:35px; height:35px; padding:0;">
+        </div>
+        <div class="setting-row">
+            <label>⏱ 秒針音</label>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <label class="switch"><input type="checkbox" id="tick-on" onchange="saveSettings()"><span class="slider"></span></label>
+                <input type="range" id="tick-vol" min="0" max="1" step="0.1" onchange="saveSettings()">
+            </div>
+        </div>
+        <div class="setting-row">
+            <label>🔔 アラーム音</label>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <label class="switch"><input type="checkbox" id="alarm-on" onchange="saveSettings()"><span class="slider"></span></label>
+                <input type="range" id="alarm-vol" min="0" max="1" step="0.1" onchange="saveSettings()">
+            </div>
+        </div>
+
+        <h2 style="margin-top: 30px;">実行履歴 (クリックで復元)</h2>
+        <div class="history-list" id="history-list-display"></div>
+        <button onclick="document.getElementById('settings-modal').style.display='none'" style="width:100%; padding:12px; margin-top:20px; cursor:pointer; background:var(--border); border:none; color:var(--text); border-radius:8px; font-weight:bold;">閉じる</button>
+    </div>
+</div>
+
+<div id="timeup-modal" class="modal-overlay">
+    <div class="modal-content" style="text-align:center; border-color:var(--sub);">
+        <h2 style="font-size: 2.5rem; color: var(--sub);">TIME UP!</h2>
+        <div id="timeup-task-name" style="font-size:1.5rem; margin: 20px 0; font-weight:bold;"></div>
+        <button onclick="stopAlarm()" style="background:var(--sub); color:white; border:none; padding:15px 30px; font-weight:bold; border-radius:50px; cursor:pointer; width:100%; font-size:1.2rem;">OK</button>
+    </div>
+</div>
+
+<div id="privacy-modal" class="modal-overlay" onclick="closeModal(event, 'privacy-modal')">
+    <div class="modal-content">
+        <h2>プライバシーポリシー</h2>
+        <div style="font-size: 0.8rem; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 5px;">
+            <p>当サイトでは、第三者配信による広告サービス「Google アドセンス」を利用しています。</p>
+            <p>広告配信事業者は、ユーザーの興味に応じた商品やサービスの広告を表示するため、当サイトや他サイトへのアクセスに関する情報 「Cookie」を使用することがあります。</p>
+            <p>本ツールの設定やタスクリストなどのデータは、ブラウザの「Local Storage」に保存されており、サーバーへ送信されることはありません。</p>
+        </div>
+        <button onclick="document.getElementById('privacy-modal').style.display='none'" style="width:100%; padding:12px; margin-top:20px; cursor:pointer; background:var(--border); border:none; color:var(--text); border-radius:8px; font-weight:bold;">閉じる</button>
+    </div>
+</div>
+
+<script>
+    let selectedSeconds = 300, timerInterval = null, remainingTime = 0;
+    let currentTaskObj = { name: "Ready?", color: "#39ff14" };
+    let alarmIntervalId = null, isHistoryRecorded = false;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    let tasks = JSON.parse(localStorage.getItem('myGachaTasks')) || [
+        {name: "読書する", color: "#39ff14"},
+        {name: "歩く", color: "#39ff14"},
+        {name: "運動する", color: "#ff4444"},
+        {name: "勉強する", color: "#4444ff"},
+        {name: "仕事する", color: "#39ff14"},
+        {name: "ゲームする", color: "#39ff14"},
+        {name: "掃除する", color: "#39ff14"}
+    ];
+
+    function loadSettings() {
+        const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+        document.getElementById('setting-theme').value = saved.theme || 'auto';
+        document.getElementById('setting-color-dark').value = saved.colorDark || '#00f2ff';
+        document.getElementById('setting-color-light').value = saved.colorLight || '#0077cc';
+        document.getElementById('tick-on').checked = saved.tickOn !== false;
+        document.getElementById('tick-vol').value = saved.tickVol || '0.3';
+        document.getElementById('alarm-on').checked = saved.alarmOn !== false;
+        document.getElementById('alarm-vol').value = saved.alarmVol || '0.5';
+        updateTheme();
+    }
+    
+    function saveSettings() {
+        localStorage.setItem('arSettings', JSON.stringify({
+            theme: document.getElementById('setting-theme').value,
+            colorDark: document.getElementById('setting-color-dark').value,
+            colorLight: document.getElementById('setting-color-light').value,
+            tickOn: document.getElementById('tick-on').checked,
+            tickVol: document.getElementById('tick-vol').value,
+            alarmOn: document.getElementById('alarm-on').checked,
+            alarmVol: document.getElementById('alarm-vol').value
+        }));
+        updateTheme();
+    }
+
+    function updateTheme() {
+        const mode = document.getElementById('setting-theme').value;
+        const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+        const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+        document.body.classList.toggle('light-mode', isLight);
+
+        const customDark = document.getElementById('setting-color-dark').value;
+        const customLight = document.getElementById('setting-color-light').value;
+        const activeThemeColor = isLight ? customLight : customDark;
+
+        // CSS変数への反映
+        document.documentElement.style.setProperty('--sub', activeThemeColor);
+        document.documentElement.style.setProperty('--accent', activeThemeColor);
+        
+        // タイトルとネオン効果の反映
+        const title = document.getElementById('main-title');
+        title.style.color = activeThemeColor;
+        if (!isLight) {
+            title.style.textShadow = `0 0 15px ${activeThemeColor}`;
+        } else {
+            title.style.textShadow = 'none';
+        }
+
+        // ガチャボタンの色の同期
+        const gachaBtn = document.getElementById('spin-button');
+        gachaBtn.style.background = activeThemeColor;
+    }
+
+    function updateListDisplay() {
+        document.getElementById('task-list-display').innerHTML = tasks.map((t, i) => 
+            `<div class="task-item">
+                <div class="task-info">
+                    <input type="color" class="task-color-input" value="${t.color}" oninput="updateTaskColor(${i}, this.value)">
+                    <span style="font-weight: bold;">${t.name}</span>
+                </div>
+                <span class="delete-btn" onclick="deleteTask(${i})">×</span>
+            </div>`
+        ).join('');
+        localStorage.setItem('myGachaTasks', JSON.stringify(tasks));
+    }
+
+    function updateTaskColor(i, color) {
+        tasks[i].color = color;
+        localStorage.setItem('myGachaTasks', JSON.stringify(tasks));
+    }
+    
+    function addTask() {
+        const val = document.getElementById('new-task').value.trim();
+        const col = document.getElementById('new-task-color').value;
+        if (val) { tasks.push({name: val, color: col}); document.getElementById('new-task').value = ''; updateListDisplay(); }
+    }
+    
+    function deleteTask(i) { tasks.splice(i, 1); updateListDisplay(); }
+    
+    function resetDefault() { 
+        if(confirm("初期化しますか？")) { 
+            tasks = [
+                {name: "読書する", color: "#39ff14"}, {name: "歩く", color: "#39ff14"}, 
+                {name: "運動する", color: "#ff4444"}, {name: "勉強する", color: "#4444ff"}, 
+                {name: "仕事する", color: "#39ff14"}, {name: "ゲームする", color: "#39ff14"}, 
+                {name: "掃除する", color: "#39ff14"}
+            ]; updateListDisplay(); 
+        } 
+    }
+
+    function setPresetTime(sec, btn) {
+        selectedSeconds = sec;
+        let label = sec < 60 ? sec+"秒" : (sec < 3600 ? (sec/60)+"分" : (sec/3600)+"時間");
+        document.getElementById('selected-time-display').innerText = `設定時間: ${label}`;
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        resetTimer();
+    }
+    
+    function setCustomTime() {
+        const h = parseInt(document.getElementById('custom-h').value) || 0;
+        const m = parseInt(document.getElementById('custom-m').value) || 0;
+        if(h*3600 + m*60 > 0) setPresetTime(h*3600 + m*60, null);
+    }
+
+    function spin() {
+        if (!tasks.length) return;
+        document.getElementById('timer-section').style.display = 'none';
+        resetTimer(); isHistoryRecorded = false;
+        let count = 0;
+        const st = setInterval(() => {
+            document.getElementById('result-text').innerText = tasks[Math.floor(Math.random() * tasks.length)].name;
+            if (++count > 20) {
+                clearInterval(st);
+                currentTaskObj = tasks[Math.floor(Math.random() * tasks.length)];
+                document.documentElement.style.setProperty('--timer-color', currentTaskObj.color);
+                document.getElementById('result-text').innerHTML = `<span style="font-size:1rem; opacity:0.6;">START!</span><br>⭐ ${currentTaskObj.name} ⭐`;
+                remainingTime = selectedSeconds; updateTimerDisplay();
+                document.getElementById('timer-section').style.display = 'block';
+            }
+        }, 60);
+    }
+
+    function startTimer() {
+        if (timerInterval || remainingTime <= 0) return;
+        if (!isHistoryRecorded && currentTaskObj.name !== "Ready?") {
+            let h = JSON.parse(localStorage.getItem('arHistory')) || [];
+            const label = document.getElementById('selected-time-display').innerText.replace("設定時間: ", "");
+            h.unshift({ date: new Date().toLocaleString(), task: currentTaskObj.name, color: currentTaskObj.color, label: label, sec: selectedSeconds });
+            localStorage.setItem('arHistory', JSON.stringify(h.slice(0,30)));
+            isHistoryRecorded = true;
+        }
+        document.getElementById('btn-start').classList.add('active-ctrl');
+        document.getElementById('btn-pause').classList.remove('active-ctrl');
+        timerInterval = setInterval(() => {
+            remainingTime--; updateTimerDisplay();
+            if (remainingTime > 0) playTone(880, 0.05, 'square', 'tick');
+            if (remainingTime <= 0) { clearInterval(timerInterval); triggerTimeUp(); }
+        }, 1000);
+    }
+    
+    function pauseTimer() { 
+        clearInterval(timerInterval); timerInterval = null; 
+        document.getElementById('btn-pause').classList.add('active-ctrl');
+        document.getElementById('btn-start').classList.remove('active-ctrl');
+    }
+    
+    function resetTimer() { 
+        pauseTimer(); remainingTime = selectedSeconds; updateTimerDisplay(); 
+        document.getElementById('btn-start').classList.remove('active-ctrl');
+        document.getElementById('btn-pause').classList.remove('active-ctrl');
+    }
+
+    function updateTimerDisplay() {
+        const h = Math.floor(remainingTime/3600).toString().padStart(2,'0');
+        const m = Math.floor((remainingTime%3600)/60).toString().padStart(2,'0');
+        const s = (remainingTime%60).toString().padStart(2,'0');
+        document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+    }
+
+    function triggerTimeUp() {
+        document.getElementById('timeup-task-name').innerText = currentTaskObj.name;
+        document.getElementById('timeup-modal').style.display = 'flex';
+        if (document.getElementById('alarm-on').checked) alarmIntervalId = setInterval(() => playTone(1200, 0.1, 'sine', 'alarm'), 400);
+    }
+    
+    function stopAlarm() { if(alarmIntervalId) clearInterval(alarmIntervalId); document.getElementById('timeup-modal').style.display = 'none'; }
+
+    function renderHistory() {
+        const h = JSON.parse(localStorage.getItem('arHistory')) || [];
+        document.getElementById('history-list-display').innerHTML = h.map((x, i) => `
+            <div class="history-item" onclick="applyHistory('${(x.task||"").replace(/'/g,"\\'")}', ${x.sec}, '${x.color || "#39ff14"}')">
+                <div class="history-main">
+                    <span class="history-task" style="border-left: 3px solid ${x.color}; padding-left: 8px;">${x.task}</span>
+                    <span style="font-size:0.75rem; opacity:0.6; margin-left: 11px;">${x.label} (${x.date.split(' ')[0]})</span>
+                </div>
+                <div class="delete-history" onclick="deleteHistory(event, ${i})">×</div>
+            </div>`).join('') || "履歴はありません";
+    }
+    
+    function deleteHistory(e, i) { e.stopPropagation(); let h = JSON.parse(localStorage.getItem('arHistory')); h.splice(i, 1); localStorage.setItem('arHistory', JSON.stringify(h)); renderHistory(); }
+    
+    function applyHistory(task, sec, color) {
+        document.getElementById('settings-modal').style.display = 'none';
+        currentTaskObj = { name: task, color: color };
+        selectedSeconds = sec; remainingTime = sec; isHistoryRecorded = true;
+        document.documentElement.style.setProperty('--timer-color', color);
+        document.getElementById('result-text').innerHTML = `<span style="font-size:0.8rem; opacity:0.6;">履歴から復元</span><br>⭐ ${currentTaskObj.name} ⭐`;
+        let label = sec < 60 ? sec+"秒" : (sec < 3600 ? (sec/60)+"分" : (sec/3600)+"時間");
+        document.getElementById('selected-time-display').innerText = `設定時間: ${label}`;
+        updateTimerDisplay(); document.getElementById('timer-section').style.display = 'block';
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; if(id==='settings-modal') renderHistory(); }
+    function closeModal(e, id) { if(e.target.id === id) document.getElementById(id).style.display = 'none'; }
+
+    loadSettings(); updateListDisplay();
+</script>
+</body>
+</html>
