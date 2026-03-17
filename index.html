@@ -2,404 +2,323 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studying Timer - Celestial Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Studying Timer</title>
     <style>
         :root {
-            /* Celestial Theme Colors */
-            --bg-deep: #05070a;
-            --bg-nebula: radial-gradient(circle at center, #0a111a 0%, #05070a 100%);
-            --accent-gold: #d4af37;
-            --accent-blue: #4a90e2;
-            --text-main: #e0e6ed;
-            --text-sub: #a0aec0;
-            --card-bg: rgba(20, 26, 35, 0.8);
-            --border-color: #2d3748;
+            /* ダークモード視認性改善：純粋な黒(#000)ではなく、要素が判別できる暗灰色に設定 */
+            --bg: #0d1117; 
+            --card: #161b22;
+            --text: #c9d1d9;
+            --sub: #58a6ff;
+            --border: #30363d;
+            --timer-color: #39ff14;
         }
 
         body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: sans-serif;
             margin: 0;
-            padding: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-nebula);
-            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* Header & User Info */
-        header {
+        /* ログイン時用ヘッダー */
+        #header-area {
             width: 100%;
-            height: 180px;
+            height: 150px;
+            background-color: var(--card);
             background-size: cover;
             background-position: center;
-            background-color: #1a202c;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: flex-end;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
-            border-bottom: 1px solid var(--border-color);
         }
 
-        .user-profile {
+        .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
             background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
-            border-radius: 12px;
-            backdrop-filter: blur(5px);
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .equipped-crown {
+        #current-crown-img {
             width: 50px;
             height: 50px;
             object-fit: contain;
         }
 
-        /* Timer Display (Traditional Style - No Glow) */
-        .timer-container {
-            text-align: center;
+        /* タイマー（グロー廃止・従来デザイン） */
+        #timer-display {
+            font-size: 80px;
+            font-family: 'Consolas', monospace;
+            color: var(--timer-color);
             margin: 40px 0;
-        }
-
-        #timer {
-            font-size: 5rem;
-            font-weight: 300;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -2px;
-            margin: 10px 0;
-        }
-
-        .progress-bar-container {
-            width: 300px;
-            height: 8px;
-            background: #2d3748;
-            border-radius: 4px;
-            margin: 20px auto;
-            overflow: hidden;
-        }
-
-        #progress-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--accent-blue);
-            transition: width 0.3s ease;
-        }
-
-        /* Main UI */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
             font-weight: bold;
-            color: var(--accent-gold);
         }
 
-        /* Buttons */
-        .controls {
-            margin-top: 30px;
+        /* ゲージ */
+        .gauge-container {
+            width: 80%;
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        #gauge-fill {
+            height: 100%;
+            background: var(--sub);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .stats-row {
             display: flex;
             gap: 20px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
 
         button {
-            padding: 12px 30px;
-            border-radius: 25px;
-            border: none;
+            padding: 12px 24px;
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: transform 0.1s;
+        }
+        
+        #recovery-btn {
+            background: #d29922;
+            color: #000;
+            border: none;
         }
 
-        button:active { transform: scale(0.95); }
-
-        .btn-start { background: var(--accent-blue); color: white; }
-        .btn-stop { background: #e53e3e; color: white; }
-        .btn-recovery { background: var(--accent-gold); color: black; display: none; }
-
-        /* Crown Inventory Modal */
-        #inventory-modal {
+        /* 王冠選択エリア */
+        #crown-selection {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--card-bg);
-            border: 1px solid var(--accent-gold);
-            padding: 20px;
-            border-radius: 20px;
-            z-index: 100;
-            width: 85%;
-            max-width: 400px;
-        }
-
-        .crown-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 10px;
-            margin-top: 15px;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 10px;
         }
-
         .crown-item {
-            width: 100%;
-            aspect-ratio: 1;
-            border: 1px solid transparent;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
-            opacity: 0.3;
+            opacity: 0.2;
+            transition: 0.2s;
         }
+        .crown-item.unlocked { opacity: 1; }
+        .crown-item.active { border: 2px solid var(--sub); border-radius: 5px; }
 
-        .crown-item.unlocked { opacity: 1; border-color: var(--border-color); }
-        .crown-item.selected { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.2); }
-
+        .modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card);
+            padding: 25px;
+            border: 1px solid var(--sub);
+            border-radius: 12px;
+            z-index: 100;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <header id="user-header">
-        <div class="user-profile">
-            <img src="" id="current-crown-img" class="equipped-crown" alt="Crown">
-            <div>
-                <div id="user-name">User</div>
-                <div id="user-level">Lv. 1</div>
-            </div>
-        </div>
-    </header>
-
-    <div class="timer-container">
-        <div id="timer">00:00:00</div>
-        <div class="progress-bar-container">
-            <div id="progress-bar"></div>
-        </div>
-        <div id="total-time-display">Total: 0h</div>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div>継続日数</div>
-            <div id="streak-count" class="stat-value">0</div>
-        </div>
-        <div class="stat-card">
-            <div>回復券</div>
-            <div id="ticket-count" class="stat-value">0</div>
+<div id="header-area">
+    <div class="user-info">
+        <img id="current-crown-img" src="crown_0.png">
+        <div>
+            <div id="display-lv" style="font-weight: bold;">Lv. 0</div>
+            <button onclick="openHeaderSettings()" style="padding: 2px 5px; font-size: 0.7rem;">ヘッダー変更</button>
         </div>
     </div>
+</div>
 
-    <div class="controls">
-        <button id="startBtn" class="btn-start" onclick="toggleTimer()">START</button>
-        <button id="recoveryBtn" class="btn-recovery" onclick="useRecoveryTicket()">継続を復活させる</button>
-        <button onclick="toggleInventory()">王冠選択</button>
-    </div>
+<div id="timer-display">00:00:00</div>
 
-    <div id="inventory-modal">
-        <h3>王冠コレクション</h3>
-        <div class="crown-grid" id="crown-list"></div>
-        <button onclick="toggleInventory()" style="margin-top: 20px; width: 100%;">閉じる</button>
-    </div>
+<div class="gauge-container">
+    <div id="gauge-fill"></div>
+</div>
 
-    <script>
-        // --- DATA STRUCTURE ---
-        let state = {
-            totalSeconds: 0,
-            currentStreak: 0,
-            recoveryTickets: 0,
-            lastDate: null,
-            isTimerRunning: false,
-            elapsedToday: 0,
-            unlockedCrowns: [0], // 初期配布
-            selectedCrown: 0,
-            headerImage: null
-        };
+<div class="stats-row">
+    <div>継続: <span id="streak-days">0</span>日</div>
+    <div>回復券: <span id="ticket-count">0</span>枚</div>
+</div>
 
-        let timerInterval;
-        const CROWN_NAMES = ["Cyber", "Celestial", "Stardust", "Steampunk", "Pastel", "Prism", "Obsidian", "Glitch", "Pearl", "Vortex"];
+<div style="display: flex; gap: 10px;">
+    <button onclick="toggleTimer()" id="main-btn">START</button>
+    <button id="recovery-btn" onclick="useRecoveryTicket()" style="display: none;">回復券を使用</button>
+    <button onclick="toggleCrownMenu()">王冠変更</button>
+</div>
 
-        // --- CALCULATION (Lv.100 = 4000h) ---
-        // S = 1440 * (Level^2) -> Level 100 = 14,400,000s = 4000h
-        function getLevel(seconds) {
-            return Math.floor(Math.sqrt(seconds / 1440));
+<div id="crown-selection"></div>
+
+<div id="header-modal" class="modal">
+    <h3>ヘッダー画像URL</h3>
+    <input type="text" id="header-url-input" style="width: 100%; margin-bottom: 10px;">
+    <button onclick="saveHeader()">保存</button>
+    <button onclick="this.parentElement.style.display='none'">閉じる</button>
+</div>
+
+<script>
+    // データ構造
+    let userData = JSON.parse(localStorage.getItem('study_timer_data')) || {
+        totalSec: 0,
+        streak: 0,
+        tickets: 0,
+        lastDate: "", // 最後に完了した日付
+        activeCrown: 0,
+        headerUrl: ""
+    };
+
+    let timer;
+    let isRunning = false;
+
+    // --- 計算式: Lv100 = 4000時間 (14,400,000秒) ---
+    // 秒数 = 1440 * Lv^2
+    function calcLv(sec) { return Math.floor(Math.sqrt(sec / 1440)); }
+    function expForLv(lv) { return 1440 * (lv ** 2); }
+
+    function updateUI() {
+        const lv = calcLv(userData.totalSec);
+        const nextExp = expForLv(lv + 1);
+        const prevExp = expForLv(lv);
+        const progress = ((userData.totalSec - prevExp) / (nextExp - prevExp)) * 100;
+
+        document.getElementById('display-lv').innerText = "Lv. " + lv;
+        document.getElementById('gauge-fill').style.width = progress + "%";
+        document.getElementById('streak-days').innerText = userData.streak;
+        document.getElementById('ticket-count').innerText = userData.tickets;
+        document.getElementById('current-crown-img').src = `crown_${userData.activeCrown}.png`;
+        
+        if(userData.headerUrl) {
+            document.getElementById('header-area').style.backgroundImage = `url(${userData.headerUrl})`;
         }
 
-        function getSecondsForLevel(lv) {
-            return 1440 * (lv ** 2);
-        }
+        // 救済ボタン表示判定
+        checkRecoveryEligibility();
+    }
 
-        // --- CORE LOGIC ---
-        function updateUI() {
-            const lv = getLevel(state.totalSeconds);
-            const nextLvSec = getSecondsForLevel(lv + 1);
-            const currentLvSec = getSecondsForLevel(lv);
-            const progress = ((state.totalSeconds - currentLvSec) / (nextLvSec - currentLvSec)) * 100;
-
-            document.getElementById('user-level').innerText = `Lv. ${lv}`;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-            document.getElementById('total-time-display').innerText = `Total: ${Math.floor(state.totalSeconds / 3600)}h`;
-            document.getElementById('streak-count').innerText = state.currentStreak;
-            document.getElementById('ticket-count').innerText = state.recoveryTickets;
-            
-            // Header
-            if(state.headerImage) {
-                document.getElementById('user-header').style.backgroundImage = `url(${state.headerImage})`;
-            }
-            
-            // Crown
-            document.getElementById('current-crown-img').src = `crown_${state.selectedCrown}.png`;
-
-            // Recovery Button Visibility
-            checkRecoveryAvailable();
-        }
-
-        function toggleTimer() {
-            if (state.isTimerRunning) {
-                clearInterval(timerInterval);
-                state.isTimerRunning = false;
-                document.getElementById('startBtn').innerText = 'START';
-                saveData();
-            } else {
-                state.isTimerRunning = true;
-                document.getElementById('startBtn').innerText = 'STOP';
-                timerInterval = setInterval(() => {
-                    state.totalSeconds++;
-                    state.elapsedToday++;
-                    updateTimerDisplay();
-                    if(state.totalSeconds % 3600 === 0) updateUI(); // 1時間ごとにUI更新
-                }, 1000);
-            }
-        }
-
-        function updateTimerDisplay() {
-            const h = Math.floor(state.totalSeconds / 3600).toString().padStart(2, '0');
-            const m = Math.floor((state.totalSeconds % 3600) / 60).toString().padStart(2, '0');
-            const s = (state.totalSeconds % 60).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
-        }
-
-        // --- STREAK & TICKET LOGIC ---
-        function checkDailyLogin() {
-            const today = new Date().toDateString();
-            if (state.lastDate === null) {
-                state.lastDate = today;
-                state.currentStreak = 1;
-            } else if (state.lastDate !== today) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                
-                if (state.lastDate === yesterday.toDateString()) {
-                    state.currentStreak++;
-                    // 10日ごとに回復券付与
-                    if (state.currentStreak % 10 === 0) {
-                        state.recoveryTickets++;
-                        alert("10日間継続達成！継続回復券を配布しました。");
-                    }
-                } else {
-                    // 継続途切れ判定
-                    checkRecoveryAvailable();
-                }
-                state.lastDate = today;
-            }
+    function toggleTimer() {
+        if(!isRunning) {
+            isRunning = true;
+            document.getElementById('main-btn').innerText = "STOP";
+            timer = setInterval(() => {
+                userData.totalSec++;
+                renderTime();
+                if(userData.totalSec % 10 === 0) updateUI(); // 10秒毎にUI更新
+            }, 1000);
+        } else {
+            clearInterval(timer);
+            isRunning = false;
+            document.getElementById('main-btn').innerText = "START";
+            checkDailyCompletion();
             saveData();
-            updateUI();
         }
+    }
 
-        function checkRecoveryAvailable() {
-            const btn = document.getElementById('recoveryBtn');
-            const today = new Date();
-            const lastDateObj = new Date(state.lastDate);
-            const diffDays = Math.floor((today - lastDateObj) / (1000 * 60 * 60 * 24));
+    function renderTime() {
+        let h = Math.floor(userData.totalSec / 3600).toString().padStart(2, '0');
+        let m = Math.floor((userData.totalSec % 3600) / 60).toString().padStart(2, '0');
+        let s = (userData.totalSec % 60).toString().padStart(2, '0');
+        document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+    }
 
-            // 「昨日できなかった（一昨日はやっていた）」かつ「今日完了した」時に表示
-            if (diffDays === 2 && state.recoveryTickets > 0) {
-                btn.style.display = 'block';
-            } else {
-                btn.style.display = 'none';
+    // 継続・救済ロジック
+    function checkDailyCompletion() {
+        const today = new Date().toLocaleDateString();
+        if (userData.lastDate !== today) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (userData.lastDate === yesterday.toLocaleDateString()) {
+                userData.streak++;
+                // 10日ごとに回復券配布
+                if (userData.streak % 10 === 0) userData.tickets++;
+            } else if (!userData.lastDate) {
+                userData.streak = 1;
             }
+            userData.lastDate = today;
         }
+    }
 
-        function useRecoveryTicket() {
-            if (state.recoveryTickets > 0) {
-                state.recoveryTickets--;
-                state.currentStreak += 1; // 穴埋め分を追加
-                alert("回復券を使用しました。継続日数を復活させました！");
-                updateUI();
-                saveData();
-            }
+    function checkRecoveryEligibility() {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const dayBeforeYest = new Date();
+        dayBeforeYest.setDate(dayBeforeYest.getDate() - 2);
+
+        // A日(一昨々日以前)完了、B日(昨日)未完了、C日(今日)実行中の時、券があれば復活可能
+        const btn = document.getElementById('recovery-btn');
+        if (userData.tickets > 0 && userData.lastDate === dayBeforeYest.toLocaleDateString()) {
+            btn.style.display = "block";
+        } else {
+            btn.style.display = "none";
         }
+    }
 
-        // --- INVENTORY ---
-        function toggleInventory() {
-            const modal = document.getElementById('inventory-modal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-            renderCrownList();
-        }
+    function useRecoveryTicket() {
+        userData.tickets--;
+        userData.streak += 1; // B日分を補填
+        userData.lastDate = new Date().toLocaleDateString();
+        saveData();
+        updateUI();
+        alert("継続日数を復元しました。");
+    }
 
-        function renderCrownList() {
-            const list = document.getElementById('crown-list');
-            list.innerHTML = '';
-            const lv = getLevel(state.totalSeconds);
+    // 王冠（10種類生成・選択）
+    function toggleCrownMenu() {
+        const menu = document.getElementById('crown-selection');
+        menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        menu.innerHTML = "";
+        const lv = calcLv(userData.totalSec);
 
-            for (let i = 0; i < 10; i++) {
-                const item = document.createElement('img');
-                item.src = `crown_${i}.png`;
-                item.className = 'crown-item';
-                
-                // 解放条件（例：10レベルごと）
-                if (lv >= i * 10) {
-                    item.classList.add('unlocked');
-                    item.onclick = () => {
-                        state.selectedCrown = i;
-                        saveData();
-                        updateUI();
-                        toggleInventory();
-                    };
+        for(let i=0; i<10; i++) {
+            const img = document.createElement('img');
+            img.src = `crown_${i}.png`;
+            img.className = "crown-item" + (lv >= i*10 ? " unlocked" : "") + (userData.activeCrown === i ? " active" : "");
+            img.onclick = () => {
+                if(lv >= i*10) {
+                    userData.activeCrown = i;
+                    saveData();
+                    updateUI();
                 }
-                if (state.selectedCrown === i) item.classList.add('selected');
-                list.appendChild(item);
-            }
+            };
+            menu.appendChild(img);
         }
+    }
 
-        // --- DATA PERSISTENCE ---
-        function saveData() {
-            localStorage.setItem('studyTimer_state', JSON.stringify(state));
-        }
+    function openHeaderSettings() { document.getElementById('header-modal').style.display = 'block'; }
+    function saveHeader() {
+        userData.headerUrl = document.getElementById('header-url-input').value;
+        document.getElementById('header-modal').style.display = 'none';
+        saveData();
+        updateUI();
+    }
 
-        function loadData() {
-            const saved = localStorage.getItem('studyTimer_state');
-            if (saved) {
-                state = JSON.parse(saved);
-                updateUI();
-                updateTimerDisplay();
-            }
-        }
+    function saveData() { localStorage.setItem('study_timer_data', JSON.stringify(userData)); }
 
-        // Initialize
-        window.onload = () => {
-            loadData();
-            checkDailyLogin();
-        };
+    window.onload = () => {
+        renderTime();
+        updateUI();
+    };
+</script>
 
-        // ログイン時のヘッダー画像設定（模擬機能）
-        function setHeaderImage(url) {
-            state.headerImage = url;
-            saveData();
-            updateUI();
-        }
-    </script>
 </body>
 </html>
