@@ -645,8 +645,24 @@
     function saveTemplate() { const name = document.getElementById('new-template-name').value.trim(); if (name && tasks.length > 0) { templates[name] = JSON.parse(JSON.stringify(tasks)); localStorage.setItem('stTemplates', JSON.stringify(templates)); document.getElementById('new-template-name').value = ''; updateTemplateDisplay(); } }
     function loadTemplate(name) { if(confirm(`テンプレート「${name}」を読み込みますか？`)) { tasks = JSON.parse(JSON.stringify(templates[name])); updateListDisplay(); } }
     function deleteTemplate(name) { if(confirm(`テンプレート「${name}」を削除しますか？`)) { delete templates[name]; localStorage.setItem('stTemplates', JSON.stringify(templates)); updateTemplateDisplay(); } }
-    function saveLogin() { const username = document.getElementById('login-username').const headerUrl = document.getElementById('login-header-url').value;
-    if(headerUrl) localStorage.setItem('stHeaderUrl', headerUrl);value.trim(); if(username) { localStorage.setItem('stUsername', username); document.getElementById('current-user-display').innerText = `ログイン中: ${username}`; alert('設定しました'); document.getElementById('login-modal').style.display = 'none'; } }
+    function saveLogin() { 
+        const usernameInput = document.getElementById('login-username');
+        const username = usernameInput ? usernameInput.value.trim() : "";
+        
+        const headerUrlInput = document.getElementById('login-header-url');
+        const headerUrl = headerUrlInput ? headerUrlInput.value.trim() : "";
+        
+        if (headerUrl) {
+            localStorage.setItem('stHeaderUrl', headerUrl);
+        }
+        
+        if (username) { 
+            localStorage.setItem('stUsername', username); 
+            document.getElementById('current-user-display').innerText = `ログイン中: ${username}`; 
+            alert('設定しました'); 
+            document.getElementById('login-modal').style.display = 'none'; 
+        } 
+    }
     
     function renderHistory() {
         const h = JSON.parse(localStorage.getItem('arHistory')) || [];
