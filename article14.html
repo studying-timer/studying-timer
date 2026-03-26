@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大学受験社会：歴史の因果関係と地理の系統的理解</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>大学受験社会：歴史の因果関係と地理の系統的理解</h1>
+
+        <p>社会科（日本史、世界史、地理、政治・経済）を、ただの「用語の詰め込み作業」だと捉えているなら、それは非常にもったいないことです。大学入試の社会科で高得点を取るためには、断片的な単語の集積ではなく、それらが互いにどう繋がり、どのような社会の「構造」を作っているのかを理解する知的姿勢が不可欠です。社会科の学習は、現代を生きる私たちが立っている場所の成り立ちを知る、極めてダイナミックな知的探究なのです。</p>
+        <p>「日本史」や「世界史」の学習において最も注力すべきは、「歴史の因果関係」を把握することです。「なぜこの政治改革が行われたのか（原因・背景）」「その結果、社会や民衆の生活はどう変化したのか（結果・影響）」。この一本のストーリーの線を意識せずに用語だけを暗記しても、記述問題や正誤判定問題のような高度な出題には対応できません。教科書を読む際は、太字の用語を覚えること以上に、その前後の文章の「繋がり」を意識して、自分の言葉で物語を要約してみてください。また、タテの歴史（時代の変遷）だけでなく、ヨコの歴史（同時代の他地域との相互作用）を意識することで、歴史の重層的な構造が立体的に浮かび上がってきます。年号の暗記は、こうした流れを整理するための補助線として捉えましょう。</p>
+        <p>「地理」は、社会科の中でも最も「論理」のウェイトが重い科目です。「なぜこの地帯にはコーヒーが栽培されるのか」「なぜこの都市には先端産業が集積しているのか」。その答えは、地形、気候、植土、宗教、民族といった「系統地理」の知識から論理的に導き出すことができます。地理は暗記の量を増やすよりも、統計資料や雨温図を見て「なぜそうなるのか」というメカニズムを推論する訓練に時間を割いてください。常に地図帳を傍らに置き、地名と場所、そしてその土地の個性をセットで確認する習慣が、あなたの地理の視座を圧倒的に広げます。</p>
+        <p>「政治・経済」や「公共」では、制度の暗記以上に「現代社会が抱える矛盾や課題」に目を向けることがポイントです。ニュースで流れる経済政策や国際紛争を、教科書で学ぶ基本理念や法的根拠とリンクさせて考えてみてください。社会科全体の学習において、一問一答はあくまで「知識の確認」に留め、メインの学習は教科書や図説をじっくり読み込み、「歴史や地理のうねり」を感じることに置いてください。論理的な繋がりを持って蓄積された知識は、入試本番であなたの思考を支える強力なエンジンとなるはずです。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
