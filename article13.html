@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大学受験理科：現象の深い理解と論理的帰結の構築</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>大学受験理科：現象の深い理解と論理的帰結の構築</h1>
+
+        <p>物理、化学、生物、地学。大学入試における理科の学習で共通して陥りやすい罠は、「公式や用語を暗記すること」をゴールにしてしまうことです。入試の本番では、教科書の例題そのままの問題が出ることは稀です。多くの場合、見たこともないような実験設定や複雑な条件下において、学んだ原理をどう応用するかが試されます。理科の学習の神髄は、公式の丸暗記ではなく、「なぜそうなるのか」という現象のメカニズムを自分の言葉で再構築することにあります。</p>
+        <p>「物理」においては、何よりも「力の可視化と運動のイメージ化」が生命線です。物体にどのような力が働いているのか、エネルギーはどのように保存され、どのように変換されているのか。問題を解く前に、必ずフリーハンドで図を描き、すべての力のベクトルを矢印で書き込む「作図」を徹底してください。物理の公式は、自然界の美しい調和を数式という言語で切り取ったものです。公式の成立条件を理解せずに数値を代入するだけの学習から卒業しましょう。一つの典型問題を、納得がいくまで、それこそ一行の立式の根拠まで完璧に説明できるまで解き抜くこと。その一問の深い理解が、初見の応用問題に対する強固な応用力を育みます。</p>
+        <p>「化学」は、理論化学における「論理的計算力」と、無機・有機化学における「系統的知識」の融合が求められます。理論化学では、単位に注目して立式する（次元解析）の癖をつけることで、ケアレスミスを防ぎ、複雑なモル計算もスムーズに処理できるようになります。無機や有機は暗記量が多いですが、これも単純な暗記ではなく、周期表の性質や電子の動き、反応機構といった「原理原則」を軸に整理してください。なぜこの物質はこの色なのか、なぜこの反応は酸性条件で進むのか。理由を添えて覚えた知識は、暗記の苦しみを軽減し、試験中にド忘れしてもその場で推論して導き出せるようになります。</p>
+        <p>「生物」は、生命現象という壮大なシステムを理解する学問です。用語の暗記を入り口としつつ、それらが細胞レベル、個体レベル、集団レベルでどのように連動しているかを俯瞰的に捉える力が試されます。特に近年の実験考察問題では、与えられたデータから仮説を構築し、対照実験の妥当性を評価する科学的思考力が必要です。教科書を読み込む際は、図表やグラフの裏にある実験的な意味を常に考える習慣を持ってください。どの科目であっても、基本原理に立ち返り、自分の頭で「現象のドラマ」を再現できるようになること。その知的誠実さが、理科という科目を最強の得点源に変える秘訣です。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
