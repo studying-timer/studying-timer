@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>メタ認知能力の向上：自分の「理解度」を客観視する技術</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>メタ認知能力の向上：自分の「理解度」を客観視する技術</h1>
+
+        <p>「自分では一生懸命勉強しているつもりなのに、なかなか模試の成績に結びつかない」。もしそんな悩みを持っているなら、原因は知識の不足ではなく、自分自身の学びの状態を客観視する力、すなわち「メタ認知能力」の不足にあるかもしれません。メタ認知とは、「考えることについて考える」という高度な知的能力のことです。学習においては、「今の自分は何を理解しており、何が不透明なままで、次にどの課題を優先すべきか」を、あたかも自分を上空から見下ろすマネージャーのように把握する技術を指します。</p>
+        <p>メタ認知能力が低いと、分かっているところばかりを繰り返して満足したり、逆に全く歯が立たない難問に時間を浪費したりしてしまいます。これを防ぐための具体的かつ強力なテクニックが、「自信度レーティング」の導入です。問題演習に取り組む際、解答を出す直前にその問題に対する自分の自信度を「○（完璧）」「△（不安）」「×（当てずっぽう）」で記録してください。そして、実際の丸付け結果と比較します。ここで最も注力すべきなのは、「自信満々だったのに間違えた（○×）」問題です。これは重大な勘違いや知識の穴を示しており、早急な修正が必要です。逆に「自信がなかったのに正解した（×○）」問題は、実力ではなく偶然の可能性が高いため、正解であっても復習リストに残すべきです。</p>
+        <p>学習計画の策定においても、メタ認知は絶大な威力を発揮します。「今日は英語を3時間やる」といった曖昧な目標は、メタ認知が働いていない典型的な例です。優れた学習者は、「昨日の単語テストで正解率が6割だった不定詞の副詞的用法を、教科書の例文5つを何も見ずに説明できるまで徹底的に補強する（目安30分）」というように、自分の弱点をピンポイントで突く具体的な指示を自分に出すことができます。学習のPDCA（計画・実行・評価・改善）サイクルを自律的に回せるようになること。それが「努力を成果に変換するプロ」への道です。</p>
+        <p>さらに、ノートの取り方を工夫することもメタ認知の訓練になります。ページの左半分には板書や事実を書き、右半分には「なぜそうなるのかという疑問」や「自分の納得度」「関連する既習事項」をメモする欄を作ってみてください。受動的な書き写し作業が、自分の思考プロセスをモニタリングする能動的な学習へと一変します。大学や社会では、誰もあなたの理解度を細かく管理してはくれません。自分の脳というプロジェクトを、自分という優秀なマネージャーが管理する。このメタ認知の習慣こそが、激動の時代を自力で生き抜くための最高のインテリジェンスとなるはずです。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
