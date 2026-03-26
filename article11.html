@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大学受験英語：基礎確立から長文読解へのステップアップ</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>大学受験英語：基礎確立から長文読解へのステップアップ</h1>
+
+        <p>大学入試における英語は、理系文系を問わず配点が高く、合否を分ける最大の要となる科目です。英語学習で最も重要なのは、積み上げの順序を間違えないことです。英語という建物は、地下の「単語・熟語」、1階の「英文法」、2階の「英文解釈（精読）」、そして最上階の「長文読解・英作文」という順で構築されます。土台がガタガタの状態で長文演習ばかり繰り返しても、点数は決して安定しません。</p>
+        <p>まず、土台となる「単語」については、一冊の単語帳を「浮気せずに」完璧にすることが最優先です。単語を覚える際は、机に座ってスペルを何回も書くよりも、隙間時間を活用して「音声」を聞き、その単語の持つイメージを脳内に描く「音読・想起学習」が最も効率的です。1日に10個を完璧に覚えようとするより、100個を10日間連続で眺め、テストを繰り返す方が、脳はそれを「重要な情報」だと認識します。目標は、単語を見た瞬間に0.1秒で意味が浮かぶ状態です。</p>
+        <p>次に「英文法」ですが、これは単なるルールの暗記ではなく「論理の理解」です。なぜここでは不定詞ではなく動名詞が使われるのか、仮定法が表している「距離感」とは何なのか。人に説明できるレベルまで理屈を理解してください。文法は、英文というパズルを解くための「唯一のルールブック」です。ここが曖昧だと、長文を読んでいる最中に文構造を見失い、単語を繋ぎ合わせて自分の都合の良い物語を作り上げる「雰囲気読み」から脱却できません。文法問題集を解くときは、正解の番号だけでなく「なぜその根拠で選んだのか」を常に自問自答してください。</p>
+        <p>土台が固まったら「英文解釈（精読）」のステップに入ります。これは、一文を$S, V, O, C$の記号に振り分け、複雑な修飾関係を紐解く訓練です。難関大入試では、一行が30語を超えるような複雑な構文の文が合格の分かれ目となります。一文を正確に訳せる力が、長文読解の精度とスピードを支えるのです。最終段階の長文演習では、段落ごとの主張を掴む「パラグラフ・リーディング」を意識してください。英語の文章は「一つの段落には一つの主張」という鉄則があります。全体を俯瞰し、筆者が何を最も伝えたいのかを論理的に追いかけることで、共通テストのような膨大な分量の英文も、迷子にならずに読み切ることができるようになります。地道な基礎固めこそが、高得点への最短距離なのです。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
