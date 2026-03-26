@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>睡眠と記憶のメカニズム：寝ている間に学力は構築される</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>睡眠と記憶のメカニズム：寝ている間に学力は構築される</h1>
+
+        <p>受験勉強の世界にはかつて「四当五落（4時間睡眠なら合格し、5時間寝ると落ちる）」という精神論が蔓延していましたが、これは現代の科学的知見から見れば完全に否定された過去の迷信です。むしろ最新の睡眠科学は、「睡眠こそが最強の学習法である」という衝撃的な事実を明らかにしています。睡眠は単なる身体や脳の休息時間ではありません。私たちが起きている間に吸収した断片的な情報を整理し、取捨選択し、長期的な知識として脳の深い場所に「定着」させる、極めて能動的なプロセスの時間なのです。</p>
+        <p>記憶の整理には、特にレム睡眠とノンレム睡眠のサイクルが深く関わっています。深い眠りであるノンレム睡眠中には、主に身体の回復と陳述的記憶（教科書の知識など）の強化が行われ、明け方に多くなる浅い眠りのレム睡眠中には、記憶の統合や感情の整理、スキルの自動化が行われます。睡眠時間を削って勉強時間を無理やり増やしても、脳がその情報を「整理整頓」する時間を確保できなければ、翌朝の脳内には使い物にならないゴミのようなデータの残骸しか残りません。これは、穴の空いたバケツで必死に水を汲んでいるのと同じくらい非効率な行為です。</p>
+        <p>また、記憶の定着率を最大化するためには「寝る前30分」を戦略的に活用することが推奨されます。これを「暗記のゴールデンタイム」と呼びます。寝る直前に取り組んだ学習内容は、他の情報の干渉を受けにくいため、その後の睡眠中に優先的に長期記憶へと転送されやすくなります。英単語の確認や歴史の重要語句の暗記を寝る前に行い、そのままスマホを触らずに静かに眠りにつく。そして翌朝、目が覚めた直後に昨晩の内容を軽くテストする。この「睡眠を挟んだサンドイッチ学習」こそが、時間対効果の最も高い暗記法です。</p>
+        <p>高校生に必要な睡眠時間は、一般的に7時間から8時間と言われています。慢性的的な睡眠不足は、脳の前頭葉の機能を著しく低下させ、イライラしやすくなったり、注意力が散漫になったり、新しいことを理解する力が大幅に鈍ったりします。これは、いわば「ほろ酔い状態」で勉強しているようなもので、本番のパフォーマンスを大きく下げてしまいます。規則正しい睡眠リズムを保ち、質の高い眠りを確保すること。それは「サボり」ではなく、学力を最大化するための「積極的な戦略」です。勉強を起きている時間だけの勝負と考えず、24時間全体のデザインとして捉える賢明さを身につけましょう。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
