@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>数学的思考が養う「未知の課題」への解決プロセス</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>数学的思考が養う「未知の課題」への解決プロセス</h1>
+
+        <p>多くの高校生が一度は抱く疑問、「将来、微分積分やベクトルなんて使わないのに、なぜこんなに苦労して勉強するのか」。その答えは、数学という学問の本質が、計算のテクニックにあるのではなく、「論理的・構造的に問題を解決する思考プロセス」そのものにあるからです。数学の問題を解く手順は、将来あなたが社会に出てから直面する「答えの決まっていない、複雑な課題」を解決する際の手順と、驚くほど似通っています。</p>
+        <p>数学的な思考の第一歩は、問題を「定義」し、要素を「分解」することです。複雑でどこから手をつけていいか分からないように見える難問も、実はいくつかの基礎的な公式や定理が幾重にも組み合わさってできています。これらを冷静に一つひとつのステップに分解し、既知の事実から未知の答えを論理的な飛躍なしに導き出す。この「筋道を立てて考える力」こそが、論理的思考力（ロジカル・シンキング）の核心です。たとえ大人になって数学の公式を忘れたとしても、このプロセスを繰り返した経験は、あなたの脳に「論理性」という消えない足跡を残します。</p>
+        <p>また、数学は極めて高いレベルでの「抽象化」を訓練する学問でもあります。具体的な数値を文字（$x, y$）に置き換えることで、個別の現象を超えた「普遍的な法則」を見つけ出す。この抽象化能力は、現代社会のあらゆる高度な活動の基盤となっています。例えば、プログラミングにおけるアルゴリズムの構築、マーケティングにおけるデータ分析、科学的研究における仮説検証。これらはすべて、バラバラに見える現象の中に共通のパターンを見つけ出し、数式や論理に落とし込む作業です。数学が得意な人は、新しい問題に直面したときでも「これは以前解いたあの問題と同じ構造だ」と見抜くことができます。</p>
+        <p>もし数学に苦手意識があるなら、まずは「答えを出すこと」よりも「なぜその答えになるのか」というプロセスにこだわってみてください。公式の暗記に頼るのを一度やめ、解答の「一行目から二行目への変化」がどのような根拠に基づいているのかを執拗に追いかけるのです。丸暗記した知識はすぐに剥がれ落ちますが、自分の頭で納得して辿った論理の道筋は、一生忘れない知恵となります。数学は、あなたの思考をクリアにし、感情や主観的な思い込みに流されずに物事を冷徹に判断するための「理性の盾」になってくれるはずです。その盾は、複雑化するこれからの社会を生き抜くために、何よりも頼もしい武器となるでしょう。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
