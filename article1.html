@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>勉強時間を増やす方法</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>勉強時間を増やす方法</h1>
+
+        <p>勉強時間を増やすためには、最初から長時間やろうとしないことが重要です。</p>
+        <p>多くの人は最初に頑張りすぎてしまい、結果として続かなくなってしまいます。</p>
+        <p>おすすめなのは、5分や10分といった短い時間から始めることです。</p>
+        <p>短時間でも「やった」という成功体験が積み重なり、自然と習慣になります。</p>
+        <p>また、勉強時間を記録することで、自分の成長を実感することができます。</p>
+        <p>記録はモチベーション維持に非常に効果的で、継続率を大きく高めます。</p>
+        <p>環境も重要です。スマートフォンの通知を切るだけでも集中力は大きく向上します。</p>
+        <p>小さな目標を積み重ねることで、確実に勉強時間は増えていきます。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
