@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>集中力のマネジメント：スマホという「誘惑の天才」との共生</title>
+
+<style>
+    :root {
+        --bg: #050505; --sub: #00f2ff; --text: #ffffff;
+        --card: #1a1a1a; --border: #333333;
+        --bg-pattern: linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+                      linear-gradient(45deg, #0a0a0a 25%, transparent 25%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+        --bg-size: 20px 20px; --bg-pos: 0 0, 10px 10px;
+    }
+
+    body.light-mode {
+        --bg: #ecece7; --card: #f9f9f7; --text: #2c3e50; --border: #d1d1cf; --bg-pattern: none;
+    }
+
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: var(--bg); color: var(--text);
+        background-image: var(--bg-pattern);
+        background-size: var(--bg-size);
+        background-position: var(--bg-pos);
+        margin: 0; display: flex; justify-content: center;
+        min-height: 100vh; padding: 20px; box-sizing: border-box;
+    }
+
+    .container { width: 100%; max-width: 500px; }
+
+    .content-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        color: var(--sub);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    p { line-height: 1.8; margin: 12px 0; }
+
+    .back-btn {
+        display: inline-block;
+        background: var(--sub);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        width: calc(100% - 40px);
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-box">
+
+        <h1>集中力のマネジメント：スマホという「誘惑の天才」との共生</h1>
+
+        <p>現代の高校生が学習において直面する最大の壁は、もはや難しい数学の公式でも、複雑な歴史の年号でもありません。それは、ポケットの中で絶えず私たちの関心を惹きつけようとするスマートフォンです。スマホは、人類史上最高の情報端末であると同時に、私たちの脳をハックして貴重な集中力を奪い去る「誘惑の天才」でもあります。ある大学の研究によれば、スマホが机の上に置いてあるだけで、たとえ電源が切れていても、私たちの認知能力（ワーキングメモリ）の一部は無意識にスマホの存在に割かれ、集中力が著しく低下することが証明されています。</p>
+        <p>集中力を高い水準で維持するための鍵は、自分自身の「意志の力」を過信しないことです。人間の意志は環境の誘惑に対して非常に脆弱であり、一度通知音が鳴れば、それに抗うことはプロの修行僧でも困難です。そこで有効なのが、意志の力に頼らない「物理的な環境構築」です。勉強中はスマホを別室に置く、家族に預ける、あるいは最近話題のタイムロッキングコンテナのような強制的な手段を導入する。視界からスマホを完全に排除し、脳からスマホの存在を忘却させる時間を作ることこそが、深い集中状態（フロー状態）に入るための唯一にして最強の近道です。</p>
+        <p>集中力には特有のバイオリズムがあります。一度通知をチェックして集中が途切れると、脳が元の深い集中状態に戻るまでには、平均して約23分もの時間がかかると言われています。SNSをほんの数秒確認するだけのつもりが、脳にとっては致命的なタイムロスを招いているのです。この「断絶」を防ぐために推奨されるのが「ポモドーロ・テクニック」です。25分間の学習と5分間の休憩を1サイクルとし、その25分間だけは「何があっても絶対にスマホを見ない」という自分との契約を交わすのです。短いスパンで達成感を積み重ねることで、脳は報酬を感じ、集中を持続しやすくなります。</p>
+        <p>休憩時間の過ごし方も、学習効率を大きく左右します。5分の休憩中にスマホでショート動画を見たりゲームをしたりすると、脳は新しい情報の処理に追われ、全くリフレッシュされません。本当の意味での休憩とは、目を閉じて脳への入力を遮断する、あるいは軽くストレッチをして血流を促すなど、脳を「デフォルト・モード・ネットワーク（整理整頓の状態）」にすることです。スマホを「暇つぶしのための受動的な道具」から「学習の目的を果たすための主体的な道具」へと変える。このデジタル・デトックスの意識こそが、これからのAI時代に必要とされる「真の集中力」を育む土台となるでしょう。</p>
+
+        <a href="index.html" class="back-btn">ツールへ戻る</a>
+
+    </div>
+</div>
+
+<script>
+const saved = JSON.parse(localStorage.getItem('arSettings')) || {};
+const mode = saved.theme || 'auto';
+const isNight = new Date().getHours() >= 21 || new Date().getHours() < 7;
+const isLight = mode === 'light' || (mode === 'auto' && !isNight);
+
+if(isLight) document.body.classList.add('light-mode');
+
+const customDark = saved.colorDark || '#00f2ff';
+const customLight = saved.colorLight || '#0077cc';
+const activeThemeColor = isLight ? customLight : customDark;
+
+document.documentElement.style.setProperty('--sub', activeThemeColor);
+</script>
+
+</body>
+</html>
