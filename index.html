@@ -105,10 +105,6 @@ gtag('config', 'G-6F5312PB3E');
     background: radial-gradient(circle at top, #1a2a6a, #0a0f2a);
 }
 
-        {
-    box-sizing: border-box;
-}
-
 html, body {
     overflow-x: hidden;
 }
@@ -116,14 +112,17 @@ html, body {
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg); color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             background-image: var(--bg-pattern); background-size: var(--bg-size); background-position: var(--bg-pos);
-            margin: 0;  justify-content: center;align-items: flex-start;
+            margin: 0;display: flex;justify-content: center;align-items: flex-start;
             min-height: 100vh; padding: 0px; box-sizing: border-box;
             transition: background-color 0.4s ease, color 0.4s ease;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; position: relative; z-index: 10; }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; position: relative; z-index: 10; box-sizing: border-box;}
 
         .header-area { display: flex; align-items: center; justify-content: space-between; position: relative; width: 100%; margin-bottom: 10px; padding-top: 10px; }
         
@@ -312,6 +311,23 @@ body:not(.light-mode) a {
 }
 a:hover {
     opacity: 0.8;
+}
+{
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    overflow-x: hidden;
 }
         
     </style>
