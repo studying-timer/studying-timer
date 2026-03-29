@@ -39,39 +39,31 @@ gtag('config', 'G-6F5312PB3E');
 
 #crown-select {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    grid-template-columns: repeat(5, 1fr); /* 5列×2行で綺麗に並べる */
     gap: 10px;
-    justify-items: center;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
-.crown-box {
-    padding: 6px;
-    border-radius: 10px;
-    border: 1px solid #555;
-    transition: 0.2s;
-}
-
-.crown-box.active {
-    border: 2px solid gold;
-    background: rgba(255,215,0,0.2);
-}
-
-.crown-box img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
+.crown-item {
     cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.crown-item:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.crown-item.selected {
+    border-color: var(--sub); /* 選択中の王冠を強調 */
+    background: rgba(255, 255, 255, 0.2);
 }
         
-.top-buttons {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
-    z-index: 9999; /* 他より前に出す */
-}
-
 #btn-crown-icon {
     background: rgba(128, 128, 128, 0.1); /* ← settings-btnと同じ */
     border: 1px solid var(--sub);
@@ -554,19 +546,22 @@ body {
 <script>
 
     
+// --- 修正後 ---
 function updateCrownDisplay() {
     const btn = document.getElementById('btn-crown-icon');
-    if (!btn) return;
+    if (!btn || !crownImages[crowns.selected]) return;
 
     btn.innerHTML = `
-    <img src="${crownImages[crowns.selected]}"
-    style="
-        width:22px;
-        height:22px;
-        object-fit:contain;
-    ">
-`;
+        <img src="${crownImages[crowns.selected]}"
+        style="
+            width:24px;
+            height:24px;
+            object-fit:contain;
+            vertical-align:middle;
+        ">
+    `;
 }
+// --- ここまで ---
 
 function updateStatusCrown() {
     const el = document.getElementById('status-crown');
@@ -611,6 +606,7 @@ function unlockCrowns(level) {
     let currentTaskObj = { name: "Ready?", color: "#39ff14", shared: false };
     let alarmIntervalId = null, isHistoryRecorded = false;
     let sessionExp = 0; // 今回のタイマーで稼いだ経験値（分数）
+    let currentSubjectSessionMin = 0; // 今回のセッションで計測中の教科別時間
     let recoveryTickets = parseInt(localStorage.getItem('stRecoveryTickets')) || 0;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -764,26 +760,28 @@ function getLevelData(exp) {
         let data = getLevelData(total);
         let level = data.level;
 
-// 🔥 ここ修正
-let newOwned = [];
-
-for (let i = 0; i < crownImages.length; i++) {
-    if (level >= (i + 1) * 10) {
+// --- 修正後 ---
+// 一旦所有リストをリセットして、レベルに応じた王冠を追加
+let newOwned = [0]; // 初期王冠(index 0)は常に所有
+for (let i = 1; i < crownImages.length; i++) {
+    if (level >= i * 10) {
         newOwned.push(i);
     }
 }
-
 crowns.owned = newOwned;
-
-for (let i = 0; i < crownImages.length; i++) {
-    if (level >= (i + 1) * 10) {
-        crowns.owned.push(i);
-    }
-}
+localStorage.setItem('stCrowns', JSON.stringify(crowns));
+// --- ここまで ---
         
 localStorage.setItem('stCrowns', JSON.stringify(crowns));
         
         if (save && sessionExp > 0) {
+            let subjectTimes = JSON.parse(localStorage.getItem('stSubjectTimes')) || {};
+            let taskName = currentTaskObj.name;
+            if (taskName !== "Ready?" && taskName !== "休憩") {
+                subjectTimes[taskName] = (subjectTimes[taskName] || 0) + currentSubjectSessionMin;
+                localStorage.setItem('stSubjectTimes', JSON.stringify(subjectTimes));
+            }
+            currentSubjectSessionMin = 0;
             localStorage.setItem('stTotalExp', total);
             sessionExp = 0;
             // ランキング用保存
@@ -995,6 +993,7 @@ document.getElementById('result-text').innerText =
             // 経験値を加算 (1秒あたり 1/60分 * 倍率)
             if (currentTaskObj.name !== "Ready?" && currentTaskObj.name !== "休憩") {
                 sessionExp += (1 / 60) * buff;
+                currentSubjectSessionMin += (1 / 60) * buff; // 教科別の時間も加算
                 updateExpVisuals(false);
             }
             
@@ -1066,7 +1065,18 @@ function updateTaskColor(i, color) {
     document.documentElement.style.setProperty('--timer-color', currentTaskObj.color);
 }    function addTask() { const val = document.getElementById('new-task').value.trim(); const col = document.getElementById('new-task-color').value; if (val) { tasks.push({name: val, color: col, shared: false}); document.getElementById('new-task').value = ''; updateListDisplay(); } }
     function deleteTask(i) { tasks.splice(i, 1); updateListDisplay(); }
-    function resetDefault() { if(confirm("初期化しますか？")) { tasks = [ {name: "読書する", color: "#39ff14"}, {name: "歩く", color: "#39ff14"}, {name: "運動する", color: "#ff4444"}, {name: "勉強する", color: "#4444ff"}, {name: "仕事する", color: "#39ff14"}, {name: "ゲームする", color: "#39ff14"}, {name: "掃除する", color: "#39ff14"} ]; updateListDisplay(); } }
+    function resetDefault() {
+    if(confirm("科目を初期状態（国語・数学・英語・理科・社会）に戻しますか？")) {
+        tasks = [
+            {name:"国語", color:"#ff6666"},
+            {name:"数学", color:"#6666ff"},
+            {name:"英語", color:"#66ff66"},
+            {name:"理科", color:"#ffff66"},
+            {name:"社会", color:"#ff66ff"}
+        ];
+        updateListDisplay();
+    }
+}
     
     function updateTemplateDisplay() {
         const html = Object.keys(templates).map(key => `<div class="template-item"><span style="font-weight:bold; cursor:pointer;" onclick="loadTemplate('${key}')">${key}</span><span class="delete-btn" style="font-size:0.8rem;" onclick="deleteTemplate('${key}')">削除</span></div>`).join('');
@@ -1133,23 +1143,53 @@ function loadTemplate(name) {
         document.getElementById('status-buff-display').innerText = "x" + buff.toFixed(2);
         document.getElementById('status-days').innerText = days + "日";
         document.getElementById('status-skip').innerText = recoveryTickets + "枚";
-       document.getElementById('crown-select').innerHTML =
-    crowns.owned.map(i => `
-        <img src="${crownImages[i]}" style="width:40px; cursor:pointer;"
-        onclick="selectCrown(${i})">
-    `).join('');
+       // --- 修正後 ---
+const crownSelectEl = document.getElementById('crown-select');
+if (crownSelectEl) {
+    crownSelectEl.innerHTML = crowns.owned.map(i => {
+        // 選択中の王冠にスタイルを適用
+        const isSelected = (crowns.selected === i);
+        const style = isSelected 
+            ? "width:45px; height:45px; cursor:pointer; border:2px solid var(--sub); background:rgba(255,255,255,0.2); border-radius:8px; padding:2px;" 
+            : "width:45px; height:45px; cursor:pointer; border:2px solid transparent; padding:2px;";
+        
+        return `<img src="${crownImages[i]}" style="${style}" onclick="selectCrown(${i})">`;
+    }).join('');
+}
 
-    window.selectCrown = function(i) {
+window.selectCrown = function(i) {
     crowns.selected = i;
     localStorage.setItem('stCrowns', JSON.stringify(crowns));
-
-    updateCrownDisplay();     // ←追加
-    updateStatusCrown();      // ←追加
+    
+    // 表示を即時更新
+    updateCrownDisplay();
+    updateStatusCrown();
+    renderStatusModal(); // 選択枠を更新するために再描画
 };
+// --- ここまで ---
         
         let h = Math.floor(totalExp / 60);
         let m = Math.floor(totalExp % 60);
         document.getElementById('status-total-time').innerText = `${h}時間${m}分`;
+        // 教科別の時間表示を生成
+        let subjectTimes = JSON.parse(localStorage.getItem('stSubjectTimes')) || {};
+        let subjectListHtml = Object.keys(subjectTimes).map(name => {
+            let totalMin = subjectTimes[name];
+            let h = Math.floor(totalMin / 60);
+            let m = Math.floor(totalMin % 60);
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span>${name}</span>
+                        <strong>${h}時間${m}分</strong>
+                    </div>`;
+        }).join('') || '<p style="color:#888;">まだ記録がありません</p>';
+
+        // 実績セクションに注入
+        document.getElementById('status-perks').innerHTML = `
+            <div style="margin-top:10px; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px;">
+                <h4 style="margin:0 0 8px 0; color:var(--sub); font-size:0.9rem;">📚 教科別累計時間</h4>
+                ${subjectListHtml}
+            </div>
+        `;
         
         let title = "";
         crownClass = "";
