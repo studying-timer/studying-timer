@@ -1180,181 +1180,154 @@ function loadTemplate(name) {
 
     // ステータス画面の生成
     function renderStatusModal() {
-       
-        let data = getLevelData(totalExp);
-        let buff = getBuffMultiplier();
-        let days = parseInt(localStorage.getItem('stConsecutiveDays')) || 0;
-        if(days===0) days = 1;
+    // --- 1. 必要なデータを最初にすべて準備する（ここが重要） ---
+    let totalExp = (parseFloat(localStorage.getItem('stTotalExp')) || 0) + sessionExp;
+    let myName = localStorage.getItem('stUserName') || "名無しの学習者";
+    let data = getLevelData(totalExp);
+    let buff = getBuffMultiplier();
+    let days = parseInt(localStorage.getItem('stConsecutiveDays')) || 0;
+    if (days === 0) days = 1;
 
-        // 例：ステータス画面を開いた時にランキングを更新する
-// renderStatusModal 関数の中に追加
-updateOnlineRanking();
+    // ランキングとスコアの更新
+    updateOnlineRanking();
+    uploadScore(myName, totalExp);
 
-// 例：タイマー終了時に自動で現在の累計時間を送信する
-// (ユーザー名が必要なので、設定等で名前を保持しておく仕組みがあると良いです)
-let myName = localStorage.getItem('stUserName') || "名無しの学習者";
-let totalExp = parseFloat(localStorage.getItem('stTotalExp')) || 0;
-uploadScore(myName, totalExp);
-
-        document.getElementById('status-level').innerText = data.level;
-        document.getElementById('status-buff-display').innerText = "x" + buff.toFixed(2);
-        document.getElementById('status-days').innerText = days + "日";
-        document.getElementById('status-skip').innerText = recoveryTickets + "枚";
-       // --- 修正後 ---
-const crownSelectEl = document.getElementById('crown-select');
-if (crownSelectEl) {
-    crownSelectEl.innerHTML = crowns.owned.map(i => {
-        // 選択中の王冠にスタイルを適用
-        const isSelected = (crowns.selected === i);
-        const style = isSelected 
-            ? "width:45px; height:45px; cursor:pointer; border:2px solid var(--sub); background:rgba(255,255,255,0.2); border-radius:8px; padding:2px;" 
-            : "width:45px; height:45px; cursor:pointer; border:2px solid transparent; padding:2px;";
-        
-        return `<img src="${crownImages[i]}" style="${style}" onclick="selectCrown(${i})">`;
-    }).join('');
-}
-
-window.selectCrown = function(i) {
-    crowns.selected = i;
-    localStorage.setItem('stCrowns', JSON.stringify(crowns));
+    // --- 2. 基本ステータスの表示 ---
+    document.getElementById('status-level').innerText = data.level;
+    document.getElementById('status-buff-display').innerText = "x" + buff.toFixed(2);
+    document.getElementById('status-days').innerText = days + "日";
+    document.getElementById('status-skip').innerText = recoveryTickets + "枚";
     
-    // 表示を即時更新
-    updateCrownDisplay();
-    updateStatusCrown();
-    renderStatusModal(); // 選択枠を更新するために再描画
-};
-// --- ここまで ---
-        
-        let h = Math.floor(totalExp / 60);
-        let m = Math.floor(totalExp % 60);
-        document.getElementById('status-total-time').innerText = `${h}時間${m}分`;
-        // 教科別の時間表示・円グラフ生成
-        let subjectTimes = JSON.parse(localStorage.getItem('stSubjectTimes')) || {};
-        
-        // 系統の定義と集計用オブジェクト
-        const groups = {
-            "国語系": { color: "#ff4444", time: 0, keywords: ["国語", "現代文", "古典"] },
-            "数学系": { color: "#4444ff", time: 0, keywords: ["数学"] },
-            "理科系": { color: "#39ff14", time: 0, keywords: ["理科", "生物", "化学", "物理", "地学"] },
-            "社会系": { color: "#ffaa00", time: 0, keywords: ["社会", "地歴", "公共", "倫理", "政経", "地理", "公民"] },
-            "英語系": { color: "#aa44ff", time: 0, keywords: ["英語"] },
-            "情報系": { color: "#00ffff", time: 0, keywords: ["情報", "技術"] },
-            "その他": { color: "#888888", time: 0, keywords: [] }
-        };
+    let h_total = Math.floor(totalExp / 60);
+    let m_total = Math.floor(totalExp % 60);
+    document.getElementById('status-total-time').innerText = `${h_total}時間${m_total}分`;
 
-        let totalChartTime = 0;
-        let subjectListHtml = "";
-        
-        // 時間が多い順にソートしてリスト作成＆系統へ振り分け
-        let sortedSubjects = Object.keys(subjectTimes).sort((a, b) => subjectTimes[b] - subjectTimes[a]);
-        
-        if (sortedSubjects.length > 0) {
-            sortedSubjects.forEach(name => {
-                let totalMin = subjectTimes[name];
-                let h = Math.floor(totalMin / 60);
-                let m = Math.floor(totalMin % 60);
-                
-                // リストHTML（文字色やボーダーをモードに追従させる）
-                subjectListHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid var(--border);">
-                            <span style="color:var(--text);">${name}</span>
-                            <strong style="color:var(--text);">${h}時間${m}分</strong>
-                        </div>`;
-                
-                totalChartTime += totalMin;
+    // --- 3. 王冠選択リストの生成 ---
+    const crownSelectEl = document.getElementById('crown-select');
+    if (crownSelectEl) {
+        crownSelectEl.innerHTML = crowns.owned.map(i => {
+            const isSelected = (crowns.selected === i);
+            const style = isSelected 
+                ? "width:45px; height:45px; cursor:pointer; border:2px solid var(--sub); background:rgba(255,255,255,0.2); border-radius:8px; padding:2px;" 
+                : "width:45px; height:45px; cursor:pointer; border:2px solid transparent; padding:2px;";
+            return `<img src="${crownImages[i]}" style="${style}" onclick="selectCrown(${i})">`;
+        }).join('');
+    }
 
-                // 系統の判定（キーワードが含まれているか）
-                let matched = false;
-                for (let gName in groups) {
-                    if (gName !== "その他" && groups[gName].keywords.some(kw => name.includes(kw))) {
-                        groups[gName].time += totalMin;
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) groups["その他"].time += totalMin;
-            });
-        } else {
-            subjectListHtml = '<p style="color:#888; text-align:center;">まだ記録がありません</p>';
-        }
+    // --- 4. 教科別の時間表示・円グラフ生成 ---
+    let subjectTimes = JSON.parse(localStorage.getItem('stSubjectTimes')) || {};
+    const groups = {
+        "国語系": { color: "#ff4444", time: 0, keywords: ["国語", "現代文", "古典"] },
+        "数学系": { color: "#4444ff", time: 0, keywords: ["数学"] },
+        "理科系": { color: "#39ff14", time: 0, keywords: ["理科", "生物", "化学", "物理", "地学"] },
+        "社会系": { color: "#ffaa00", time: 0, keywords: ["社会", "地歴", "公共", "倫理", "政経", "地理", "公民"] },
+        "英語系": { color: "#aa44ff", time: 0, keywords: ["英語"] },
+        "情報系": { color: "#00ffff", time: 0, keywords: ["情報", "技術"] },
+        "その他": { color: "#888888", time: 0, keywords: [] }
+    };
 
-        // 円グラフ（conic-gradient）と凡例の生成
-        let chartHtml = "";
-        if (totalChartTime > 0) {
-            let conicStops = [];
-            let currentPercent = 0;
-            
+    let totalChartTime = 0;
+    let subjectListHtml = "";
+    let sortedSubjects = Object.keys(subjectTimes).sort((a, b) => subjectTimes[b] - subjectTimes[a]);
+    
+    if (sortedSubjects.length > 0) {
+        sortedSubjects.forEach(name => {
+            let totalMin = subjectTimes[name];
+            let h = Math.floor(totalMin / 60);
+            let m = Math.floor(totalMin % 60);
+            subjectListHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid var(--border);">
+                                <span style="color:var(--text);">${name}</span>
+                                <strong style="color:var(--text);">${h}時間${m}分</strong>
+                            </div>`;
+            totalChartTime += totalMin;
+
+            let matched = false;
             for (let gName in groups) {
-                if (groups[gName].time > 0) {
-                    let pct = (groups[gName].time / totalChartTime) * 100;
-                    conicStops.push(`${groups[gName].color} ${currentPercent}% ${currentPercent + pct}%`);
-                    currentPercent += pct;
+                if (gName !== "その他" && groups[gName].keywords.some(kw => name.includes(kw))) {
+                    groups[gName].time += totalMin;
+                    matched = true;
+                    break;
                 }
             }
-            
-            let legendHtml = Object.keys(groups).map(gName => {
-                if (groups[gName].time > 0) {
-                    return `<div style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text);">
-                                <span style="display:inline-block; width:10px; height:10px; background:${groups[gName].color}; border-radius:50%;"></span>
-                                ${gName}
-                            </div>`;
-                }
-                return '';
-            }).join('');
+            if (!matched) groups["その他"].time += totalMin;
+        });
+    } else {
+        subjectListHtml = '<p style="color:#888; text-align:center;">まだ記録がありません</p>';
+    }
 
-            chartHtml = `
-                <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 15px;">
-                    <div style="width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(${conicStops.join(', ')}); margin-bottom: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>
-                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
-                        ${legendHtml}
-                    </div>
-                </div>
-            `;
+    let chartHtml = "";
+    if (totalChartTime > 0) {
+        let conicStops = [];
+        let currentPercent = 0;
+        for (let gName in groups) {
+            if (groups[gName].time > 0) {
+                let pct = (groups[gName].time / totalChartTime) * 100;
+                conicStops.push(`${groups[gName].color} ${currentPercent}% ${currentPercent + pct}%`);
+                currentPercent += pct;
+            }
         }
+        let legendHtml = Object.keys(groups).map(gName => {
+            if (groups[gName].time > 0) {
+                return `<div style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text);">
+                            <span style="display:inline-block; width:10px; height:10px; background:${groups[gName].color}; border-radius:50%;"></span>
+                            ${gName}
+                        </div>`;
+            }
+            return '';
+        }).join('');
 
-        // 実績セクションに注入（背景を見やすく、スクロール可能に）
-        document.getElementById('status-perks').innerHTML = `
-            <div style="margin-top:10px; padding:15px; background:rgba(128,128,128,0.1); border-radius:10px; border: 1px solid var(--border);">
-                <h4 style="margin:0 0 12px 0; color:var(--sub); font-size:1rem; text-align:center;">📚 教科別累計時間</h4>
-                ${chartHtml}
-                <div style="max-height: 150px; overflow-y: auto; padding-right: 5px;">
-                    ${subjectListHtml}
+        chartHtml = `
+            <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 15px;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(${conicStops.join(', ')}); margin-bottom: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>
+                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
+                    ${legendHtml}
                 </div>
             </div>
         `;
-        
-        let title = "";
-        crownClass = "";
+    }
 
-        
-let crownIcon = "";
+    document.getElementById('status-perks').innerHTML = `
+        <div style="margin-top:10px; padding:15px; background:rgba(128,128,128,0.1); border-radius:10px; border: 1px solid var(--border);">
+            <h4 style="margin:0 0 12px 0; color:var(--sub); font-size:1rem; text-align:center;">📚 教科別累計時間</h4>
+            ${chartHtml}
+            <div style="max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                ${subjectListHtml}
+            </div>
+        </div>
+    `;
 
-// タイトルだけ残す（OK）
-if (data.level >= 100) { title = "時を統べる神"; }
-else if (data.level >= 90) { title = "伝説の集中力"; }
-else if (data.level >= 60) { title = "時間の支配者"; }
-else if (data.level >= 30) { title = "継続の達人"; }
-else if (data.level >= 10) { title = "習慣化の始まり"; }
-else { title = "見習い"; }
+    // --- 5. 称号と実績王冠の表示 ---
+    let title = "見習い";
+    if (data.level >= 100) title = "時を統べる神";
+    else if (data.level >= 90) title = "伝説の集中力";
+    else if (data.level >= 60) title = "時間の支配者";
+    else if (data.level >= 30) title = "継続の達人";
+    else if (data.level >= 10) title = "習慣化の始まり";
 
-document.getElementById('status-title').innerText = title;
-        
-const sc = document.getElementById('status-crown');
+    document.getElementById('status-title').innerText = title;
+
+    const sc = document.getElementById('status-crown');
     if (sc) {
-        // 選択中が 'none' の場合、持っている中で最大のインデックス（最新の王冠）を表示
         let displayIdx = crowns.selected;
         if (displayIdx === 'none' && crowns.owned.length > 0) {
             displayIdx = Math.max(...crowns.owned);
         }
-
         if (crownImages[displayIdx]) {
-            sc.innerHTML = `
-                <img src="${crownImages[displayIdx]}"
-                style="width:60px; height:60px; object-fit:contain; filter: drop-shadow(0 0 5px rgba(255,215,0,0.3));">
-            `;
+            sc.innerHTML = `<img src="${crownImages[displayIdx]}" style="width:60px; height:60px; object-fit:contain; filter: drop-shadow(0 0 5px rgba(255,215,0,0.3));">`;
         } else {
             sc.innerHTML = `<div style="font-size:0.7rem; color:var(--sub); opacity:0.5;">No Crown</div>`;
         }
     }
+}
+
+// 関連する選択関数も window オブジェクトに登録（renderStatusModalの外に配置してください）
+window.selectCrown = function(i) {
+    crowns.selected = i;
+    localStorage.setItem('stCrowns', JSON.stringify(crowns));
+    updateCrownDisplay();
+    updateStatusCrown();
+    renderStatusModal(); 
+};
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyKqP_L_WzD4FMbg0R6cwum0PLp7THeuK2u3Am70Yp-exsUQu414ph7srfAm6evBXd6MA/exec"; // ここにGASのURLを貼る
 
@@ -1482,7 +1455,19 @@ function renderUserIcon() {
 }
 };
 
-        
+     function playTone(freq, duration) {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.frequency.value = freq;
+    oscillator.type = 'sine';
+    oscillator.start();
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
+    oscillator.stop(audioCtx.currentTime + duration / 1000);
+}   
         window.onload = function() {
     updateCrownDisplay();
 };
