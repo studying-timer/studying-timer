@@ -1332,7 +1332,13 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyBY9YsXOo9jEoTI4WlqCye
 
 // --- データを送信する関数 ---
 // 1. スコアを送信する関数（勉強が終わったタイミングや、モーダルを開く前などに実行）
+// 1. スコアを送信する関数（勉強が終わったタイミングや、モーダルを開く前などに実行）
 async function uploadScore(userName, score) {
+    // ゲストや未入力の場合は送信しない
+    if(!userName || userName === "ゲスト" || userName.trim() === "") {
+        return;
+    }
+    
     try {
         await fetch(GAS_URL, {
             method: "POST",
@@ -1468,46 +1474,6 @@ function renderUserIcon() {
     location.reload();
 }
 };
-
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyBY9YsXOo9jEoTI4WlqCye1P8qpfcalyXlzzIwBuSXsI3DYsnVmDE_xn_b4ABTmkcsOw/exec";
-
-// スコアを送信する関数
-async function uploadScore(userName, score) {
-    // 【対策】名前が「ゲスト」または空の場合は送信を中止する
-    if(!userName || userName === "ゲスト" || userName.trim() === "") {
-        console.log("ゲストユーザーのためランキング送信をスキップしました");
-        return;
-    }
-    
-    if(!GAS_URL || GAS_URL.includes("ここに")) return;
-
-    try {
-        await fetch(GAS_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ name: userName, score: score })
-        });
-        console.log("スコアを送信しました:", userName, score);
-    } catch (e) { 
-        console.error("送信エラー:", e); 
-    }
-}
-
-// ランキングを取得して表示する関数
-async function updateOnlineRanking() {
-    const rankingEl = document.getElementById('online-ranking-list');
-    if (!rankingEl || !GAS_URL || GAS_URL.includes("ここに")) return;
-
-    try {
-        const response = await fetch(GAS_URL);
-        const data = await response.json();
-        
-        rankingEl.innerHTML = ''; 
-        if (data.length === 0) {
-            rankingEl.innerHTML = '<p style="color:#888; text-align:center;">まだデータがありません</p>';
-            return;
-        }
 
         data.forEach((user, index) => {
             const row = document.createElement('div');
