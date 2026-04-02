@@ -605,17 +605,6 @@ function closeModal(e, id) {
 }
     
 function unlockCrowns(level) {
-    if (!crowns) return;
-    const newUnlocks = [];
-    if (level >= 10 && !crowns.owned.includes('bronze')) newUnlocks.push('bronze');
-    if (level >= 30 && !crowns.owned.includes('silver')) newUnlocks.push('silver');
-    if (level >= 50 && !crowns.owned.includes('gold')) newUnlocks.push('gold');
-    if (level >= 100 && !crowns.owned.includes('god')) newUnlocks.push('god');
-
-    if (newUnlocks.length > 0) {
-        crowns.owned = [...new Set([...crowns.owned, ...newUnlocks])];
-        localStorage.setItem('stCrowns', JSON.stringify(crowns));
-    }
 }
     /* --- グローバル変数 --- */
     let selectedSeconds = 300, timerInterval = null, remainingTime = 0;
@@ -1205,8 +1194,10 @@ function loadTemplate(name) {
     document.getElementById('status-total-time').innerText = `${h_total}時間${m_total}分`;
 
     // --- 3. 王冠選択リストの生成 ---
+    // --- 3. 王冠選択リストの生成 ---
     const crownSelectEl = document.getElementById('crown-select');
     if (crownSelectEl) {
+        // crowns.owned（現在解禁済みの王冠）だけを回して表示する（未解禁の枠は作らない）
         crownSelectEl.innerHTML = crowns.owned.map(i => {
             const isSelected = (crowns.selected === i);
             const style = isSelected 
@@ -1215,30 +1206,8 @@ function loadTemplate(name) {
             return `<img src="${crownImages[i]}" style="${style}" onclick="selectCrown(${i})">`;
         }).join('');
     }
-const crownList = document.getElementById('crownList');
-    crownList.innerHTML = '';
-
-    // 10個の王冠枠を作成
-    for (let i = 0; i < 10; i++) {
-        const item = document.createElement('div');
-        item.className = 'crown-item';
         
-        // 所有しているかチェック
-        const isOwned = crowns.owned.includes(i);
-        const isSelected = (crowns.selected === i);
-
-        // 画像のインデックスは 0-9 なので、ファイル名は i+1 (1-10) にする
-        const imgNum = i + 1;
-        const imgSrc = `images/crowns/crown${imgNum}.png`;
-
-        item.innerHTML = `
-            <img src="${imgSrc}" 
-                 style="filter: ${isOwned ? 'none' : 'grayscale(1) opacity(0.3)'};"
-                 onclick="${isOwned ? `selectCrown(${i})` : ''}">
-            ${isSelected ? '<div class="selected-mark">装着中</div>' : ''}
-        `;
-        crownList.appendChild(item);
-    }
+    // --- 4. 教科別の時間表示・円グラフ生成 ---
         
     // --- 4. 教科別の時間表示・円グラフ生成 ---
     let subjectTimes = JSON.parse(localStorage.getItem('stSubjectTimes')) || {};
