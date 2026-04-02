@@ -1328,7 +1328,7 @@ window.selectCrown = function(i) {
     renderStatusModal(); 
 };
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwqIhKSWO8sZ6g4Vvp-z6-K6Il4KxT1HQe_VxW54zNXFB9u8-c8eASUhhpCNROS962o/exec"; // ここにGASのURLを貼る
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyBY9YsXOo9jEoTI4WlqCye1P8qpfcalyXlzzIwBuSXsI3DYsnVmDE_xn_b4ABTmkcsOw/exec"; // ここにGASのURLを貼る
 
 // --- データを送信する関数 ---
 // 1. スコアを送信する関数（勉強が終わったタイミングや、モーダルを開く前などに実行）
@@ -1349,35 +1349,37 @@ async function uploadScore(userName, score) {
 // 2. ランキングを取得して表示する関数
 async function updateOnlineRanking() {
     const rankingEl = document.getElementById('online-ranking-list');
-    if (!rankingEl) return;
+    // ループ防止：関数内で自分自身（updateOnlineRanking）を呼び出さないこと！
+    if (!rankingEl || !GAS_URL || GAS_URL.includes("ここに")) return;
 
     try {
-        const response = await fetch(GAS_URL);
-        const rankingData = await response.json();
-        
-        rankingEl.innerHTML = ''; // 「読み込み中...」をクリア
-        
-        rankingData.forEach((user, index) => {
-            const item = document.createElement('div');
-            item.style.cssText = "display:flex; justify-content:space-between; border-bottom:1px solid #444; padding:5px 0;";
-            
-            // 上位3位まではメダルをつけるなどの装飾
-            let rankMark = `${index + 1}位`;
-            if (index === 0) rankMark = '🥇 1位';
-            if (index === 1) rankMark = '🥈 2位';
-            if (index === 2) rankMark = '🥉 3位';
+        // GASからのデータ取得
+        const response = await fetch(GAS_URL, {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
 
-            item.innerHTML = `
-                <span>${rankMark} : ${user.name}</span>
-                <strong>${user.score} pt</strong>
-            `;
-            rankingEl.appendChild(item);
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        
+        rankingEl.innerHTML = ''; 
+        if (!data || data.length === 0) {
+            rankingEl.innerHTML = '<p style="color:#888; text-align:center;">データがまだありません</p>';
+            return;
+        }
+
+        data.forEach((user, index) => {
+            const row = document.createElement('div');
+            row.style.cssText = "display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05);";
+            let rank = (index < 3) ? ['🥇','🥈','🥉'][index] : `${index+1}位`;
+            row.innerHTML = `<span>${rank} ${user.name}</span><strong>${Math.floor(user.score)} min</strong>`;
+            rankingEl.appendChild(row);
         });
     } catch (e) {
         console.error("ランキング取得エラー:", e);
-        rankingEl.innerHTML = '<p style="color:red;">ランキングの取得に失敗しました</p>';
+        rankingEl.innerHTML = '<p style="color:#888; text-align:center;">ランキングの取得に失敗しました</p>';
     }
-    updateOnlineRanking();
 }
         
 
