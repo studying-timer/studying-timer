@@ -637,7 +637,7 @@ function unlockCrowns(level) {
 let crowns = JSON.parse(localStorage.getItem('stCrowns')) || { owned: [0], selected: 0 };
 
 // データが古い形式（文字列など）の場合、安全のためにリセット
-if (typeof crowns.selected !== 'number' || (crowns.owned.length > 0 && typeof crowns.owned[0] !== 'number')) {
+if (typeof crowns.selected !== 'number') {
     crowns = { owned: [0], selected: 0 };
     localStorage.setItem('stCrowns', JSON.stringify(crowns));
 }
